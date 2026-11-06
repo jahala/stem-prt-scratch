@@ -1,0 +1,23 @@
+name: gate
+
+# A throwaway for the plotplot stem's deciding test: does a pull_request_target job judge a
+# pull request with the base branch's workflow, and does its check land on the PR head?
+on:
+  pull_request_target:
+
+permissions:
+  contents: read
+
+jobs:
+  garden:
+    name: garden
+    runs-on: ubuntu-latest
+    steps:
+      # The pull request's tree, as data only: nothing from it is executed.
+      - uses: actions/checkout@v5
+        with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
+          persist-credentials: false
+
+      - name: the tree carries no forbidden.txt
+        run: test ! -e forbidden.txt
